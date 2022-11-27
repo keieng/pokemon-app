@@ -14,18 +14,27 @@ function App() {
   const [pokemonData, setPokemonData] = useState([]);
   const [nextURL, setNextURL] = useState("");
   const [prevURL, setPrevURL] = useState("");
+  const [endURL, setEndURL] = useState("");
+  const [dataCount, setDataCount] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+
+  const fetchPokemonData = async (pageURL) => {
+    setLoading(true);
+    // 全てのポケモンデータを取得
+    let res = await getAllPokemon(pageURL);
+    // 各ポケモンの詳細なデータを取得
+    await loadPokemon(res.results);
+    setDataCount(res.count);
+    setPageCount(Math.floor(dataCount / 20));
+    const endOffset = pageCount * 20;
+    setEndURL(`${initialURL}?offset=${endOffset}&limit=20`);
+    setNextURL(res.next);
+    setPrevURL(res.previous);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchPokemonData = async () => {
-      // 全てのポケモンデータを取得
-      let res = await getAllPokemon(initialURL);
-      // 各ポケモンの詳細なデータを取得
-      await loadPokemon(res.results);
-      setNextURL(res.next);
-      setPrevURL(res.previous);
-      setLoading(false);
-    };
-    fetchPokemonData();
+    fetchPokemonData(initialURL);
   }, []);
 
   const loadPokemon = async (data) => {
@@ -36,23 +45,6 @@ function App() {
       })
     );
     setPokemonData(_pokemonData);
-  };
-
-  const handlePrevPage = async () => {
-    setLoading(true);
-    let res = await getAllPokemon(prevURL);
-    await loadPokemon(res.results);
-    setNextURL(res.next);
-    setPrevURL(res.previous);
-    setLoading(false);
-  };
-  const handleNextPage = async () => {
-    setLoading(true);
-    let res = await getAllPokemon(nextURL);
-    await loadPokemon(res.results);
-    setNextURL(res.next);
-    setPrevURL(res.previous);
-    setLoading(false);
   };
 
   return (
@@ -78,20 +70,39 @@ function App() {
             })}
           </Row>
           <Pagination>
-            {/* <Pagination.First /> */}
+            <Pagination.First
+              disabled={prevURL ? false : true}
+              onClick={() => {
+                fetchPokemonData(initialURL);
+              }}
+            />
             <Pagination.Prev
               disabled={prevURL ? false : true}
-              onClick={handlePrevPage}
+              onClick={() => {
+                fetchPokemonData(prevURL);
+              }}
             />
-            {/* <Pagination.Item>{1}</Pagination.Item>
-            <Pagination.Ellipsis />
+            {/* {Array.from({ length: pageCount }).map((_, i) =>
+              i <= 10 ? <Pagination.Item>{i + 1}</Pagination.Item> : <></>
+            )} */}
+            {/* <Pagination.Ellipsis />
 
             <Pagination.Item active>{12}</Pagination.Item>
 
             <Pagination.Ellipsis />
             <Pagination.Item>{20}</Pagination.Item> */}
-            <Pagination.Next onClick={handleNextPage} />
-            {/* <Pagination.Last /> */}
+            <Pagination.Next
+              disabled={nextURL ? false : true}
+              onClick={() => {
+                fetchPokemonData(nextURL);
+              }}
+            />
+            <Pagination.Last
+              disabled={nextURL ? false : true}
+              onClick={() => {
+                fetchPokemonData(endURL);
+              }}
+            />
           </Pagination>
         </Container>
       )}
