@@ -5,3 +5,8 @@ export const getAllPokemon = (url) => {
       .then((data) => resolve(data));
   });
 };
+export const getAllPokemonAsync = async (url) => {
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+};
