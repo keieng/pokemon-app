@@ -6,18 +6,18 @@ export const NavigationBar = () => {
   return (
     <>
       <Navbar bg="primary" variant="dark">
-        <Container>
-          <Navbar.Brand href="#home" text="white">
-            {/* <img
+        {/* <Container> */}
+        <Navbar.Brand href="#home" className="ps-3">
+          {/* <img
               alt=""
               src="/logo.svg"
               width="30"
               height="30"
               className="d-inline-block align-top"
             />{" "} */}
-            ポケモン図鑑
-          </Navbar.Brand>
-        </Container>
+          ポケモン図鑑
+        </Navbar.Brand>
+        {/* </Container> */}
       </Navbar>
     </>
   );

@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Card from "./components/Card";
-import { getAllPokemon, getAllPokemonAsync, getPokemon } from "./utils/pokemon";
+import { PokemonCard } from "./components/PokemonCard";
+import { getAllPokemon, getPokemon } from "./utils/pokemon";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import { NavigationBar } from "./components/NavigationBar";
+import { Pagination, Spinner } from "react-bootstrap";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
   const [loading, setLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
+  const [nextURL, setNextURL] = useState("");
+  const [prevURL, setPrevURL] = useState("");
 
   useEffect(() => {
     const fetchPokemonData = async () => {
       // 全てのポケモンデータを取得
       let res = await getAllPokemon(initialURL);
       // 各ポケモンの詳細なデータを取得
-      loadPokemon(res.results);
+      await loadPokemon(res.results);
+      setNextURL(res.next);
+      setPrevURL(res.previous);
       setLoading(false);
     };
     fetchPokemonData();
@@ -29,18 +38,62 @@ function App() {
     setPokemonData(_pokemonData);
   };
 
+  const handlePrevPage = async () => {
+    setLoading(true);
+    let res = await getAllPokemon(prevURL);
+    await loadPokemon(res.results);
+    setNextURL(res.next);
+    setPrevURL(res.previous);
+    setLoading(false);
+  };
+  const handleNextPage = async () => {
+    setLoading(true);
+    let res = await getAllPokemon(nextURL);
+    await loadPokemon(res.results);
+    setNextURL(res.next);
+    setPrevURL(res.previous);
+    setLoading(false);
+  };
+
   return (
     <div className="App">
+      <NavigationBar />
       {loading ? (
-        <h1>ロード中…</h1>
+        <h1>
+          Loading
+          <Spinner animation="grow" />
+        </h1>
       ) : (
-        <>
-          <div>
-            {pokemonData.map((pokemon, i) => {
-              return <Card key={i} pokemon={pokemon} />;
+        <Container>
+          <Row sm={4} className="g-4 my-3">
+            {pokemonData.map((pokemon) => {
+              return (
+                <Col>
+                  <PokemonCard
+                    key={pokemon.base_experience}
+                    pokemon={pokemon}
+                  />
+                </Col>
+              );
             })}
-          </div>
-        </>
+          </Row>
+          <Pagination>
+            {/* <Pagination.First /> */}
+            <Pagination.Prev
+              disabled={prevURL ? false : true}
+              onClick={handlePrevPage}
+            />
+            {/* <Pagination.Item>{1}</Pagination.Item>
+            <Pagination.Ellipsis />
+
+            <Pagination.Item active>{12}</Pagination.Item>
+
+            <Pagination.Ellipsis />
+            <Pagination.Item>{20}</Pagination.Item> */}
+            <Pagination.Next onClick={handleNextPage} />
+            {/* <Pagination.Last /> */}
+          </Pagination>
+        </Container>
       )}
     </div>
   );
