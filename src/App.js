@@ -1,20 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { getAllPokemon, getAllPokemonAsync } from "./utils/pokemon";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPokemonData = async () => {
       let res = await getAllPokemon(initialURL);
       // let res2 = await getAllPokemonAsync(initialURL);
       console.log(res);
+      setLoading(false);
     };
     fetchPokemonData();
   }, []);
 
-  return <div className="App">ポケモン</div>;
+  return (
+    <div className="App">
+      {loading ? <h1>ロード中…</h1> : <h1>ポケモンデータを取得しました</h1>}
+    </div>
+  );
 }
 
 export default App;
