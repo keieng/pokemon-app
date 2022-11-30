@@ -41,7 +41,7 @@ function App() {
 
   const changeLimit = (value) => {
     if (!value) return;
-    setLimit(value);
+    setLimit(Number(value));
   };
 
   useEffect(() => {
@@ -58,6 +58,8 @@ function App() {
     setPokemonData(_pokemonData);
   };
 
+  const selectLimitValue = [5, 10, 20, 40, 60, 80, 100];
+
   return (
     <div className="App">
       <NavigationBar />
@@ -68,45 +70,32 @@ function App() {
         </h1>
       ) : (
         <Container>
-          <Row className="my-3">
+          <Form.Group as={Row} className="mt-3">
             <Form.Label className="col-sm-2 col-form-label" htmlFor="limit">
               表示件数
             </Form.Label>
-            <Form.Select
-              className="col-sm"
-              id="limit"
-              onChange={(e) => {
-                changeLimit(e.target.value);
-              }}
-            >
-              <option selected={limit == 5} value={5}>
-                5
-              </option>
-              <option selected={limit == 10} value={10}>
-                10
-              </option>
-              <option selected={limit == 20} value={20}>
-                20
-              </option>
-              <option selected={limit == 40} value={40}>
-                40
-              </option>
-              <option selected={limit == 60} value={60}>
-                60
-              </option>
-              <option selected={limit == 80} value={80}>
-                80
-              </option>{" "}
-              <option selected={limit == 80} value={100}>
-                100
-              </option>
-            </Form.Select>
-          </Row>
-
-          <Row sm={5} className="g-4 my-3">
+            <Col sm="2">
+              <Form.Control
+                as="select"
+                id="limit"
+                onChange={(e) => {
+                  changeLimit(e.target.value);
+                }}
+              >
+                {selectLimitValue.map((num) => {
+                  return (
+                    <option selected={limit === num} value={num}>
+                      {num}
+                    </option>
+                  );
+                })}
+              </Form.Control>
+            </Col>
+          </Form.Group>
+          <Row sm={5} className="my-3">
             {pokemonData.map((pokemon) => {
               return (
-                <Col>
+                <Col className="p-3">
                   <PokemonCard
                     key={pokemon.base_experience}
                     pokemon={pokemon}

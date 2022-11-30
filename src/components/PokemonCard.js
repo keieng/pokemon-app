@@ -9,7 +9,6 @@ export const PokemonCard = ({ pokemon }) => {
         className="m-auto w-50"
         variant="top"
         src={pokemon.sprites.front_default}
-        alt=""
       />
       <Card.Body>
         <Card.Title>
