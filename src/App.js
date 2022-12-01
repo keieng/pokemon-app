@@ -7,10 +7,11 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { NavigationBar } from "./components/NavigationBar";
 import { Form, Pagination, Spinner } from "react-bootstrap";
+import { Loading } from "./components/Loading";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [pokemonData, setPokemonData] = useState([]);
   const [nextURL, setNextURL] = useState("");
   const [prevURL, setPrevURL] = useState("");
@@ -21,7 +22,7 @@ function App() {
   const [offset, setOffset] = useState("");
 
   const fetchPokemonData = async (pageURL) => {
-    setLoading(true);
+    setIsLoading(true);
     // 全てのポケモンデータを取得
     let res = await getAllPokemon(pageURL);
     // 各ポケモンの詳細なデータを取得
@@ -32,7 +33,7 @@ function App() {
     setEndURL(`${initialURL}?offset=${endOffset}&limit=${limit}`);
     setNextURL(res.next);
     setPrevURL(res.previous);
-    setLoading(false);
+    setIsLoading(false);
   };
 
   // const offsetUrl = () => {
@@ -63,11 +64,8 @@ function App() {
   return (
     <div className="App">
       <NavigationBar />
-      {loading ? (
-        <h1>
-          Loading
-          <Spinner animation="grow" />
-        </h1>
+      {isLoading ? (
+        <Loading />
       ) : (
         <Container>
           <Form.Group as={Row} className="mt-3">
