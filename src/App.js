@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { NavigationBar } from "./components/NavigationBar";
-import { Form, Pagination, Spinner } from "react-bootstrap";
+import { Form, Pagination } from "react-bootstrap";
 import { Loading } from "./components/Loading";
 
 function App() {
@@ -15,24 +15,28 @@ function App() {
   const [pokemonData, setPokemonData] = useState([]);
   const [nextURL, setNextURL] = useState("");
   const [prevURL, setPrevURL] = useState("");
-  const [endURL, setEndURL] = useState("");
   const [dataCount, setDataCount] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [endOffset, setEndOffset] = useState(0);
 
-  const fetchPokemonData = async (pageURL) => {
+  const fetchPokemonData = async (offset) => {
+    // ローディング開始
     setIsLoading(true);
-    // 全てのポケモンデータを取得
-    let res = await getAllPokemon(pageURL);
+    // ポケモンデータを取得
+    let res = await getAllPokemon(
+      `${initialURL}?offset=${offset}&limit=${limit}`
+    );
     // 各ポケモンの詳細なデータを取得
     await loadPokemon(res.results);
     setDataCount(res.count);
     setPageCount(Math.floor(dataCount / limit));
-    const endOffset = pageCount * limit;
-    setEndURL(`${initialURL}?offset=${endOffset}&limit=${limit}`);
+    setEndOffset(pageCount * limit);
     setNextURL(res.next);
     setPrevURL(res.previous);
+    setOffset(offset);
+    // ローディング終了
     setIsLoading(false);
   };
 
@@ -40,13 +44,15 @@ function App() {
   //   setEndURL(`${initialURL}?offset=${offset}&limit=${limit}`);
   // };
 
+  // 表示件数変更
   const changeLimit = (value) => {
     if (!value) return;
     setLimit(Number(value));
   };
 
+  // 初期表示時にポケモンデータ取得
   useEffect(() => {
-    fetchPokemonData(`${initialURL}?limit=${limit}`);
+    fetchPokemonData(0);
   }, [limit]);
 
   const loadPokemon = async (data) => {
@@ -106,13 +112,13 @@ function App() {
             <Pagination.First
               disabled={prevURL ? false : true}
               onClick={() => {
-                fetchPokemonData(initialURL);
+                fetchPokemonData(0);
               }}
             />
             <Pagination.Prev
               disabled={prevURL ? false : true}
               onClick={() => {
-                fetchPokemonData(prevURL);
+                fetchPokemonData(offset - limit);
               }}
             />
             {/* {Array.from({ length: pageCount }).map((_, i) =>
@@ -127,13 +133,13 @@ function App() {
             <Pagination.Next
               disabled={nextURL ? false : true}
               onClick={() => {
-                fetchPokemonData(nextURL);
+                fetchPokemonData(offset + limit);
               }}
             />
             <Pagination.Last
               disabled={nextURL ? false : true}
               onClick={() => {
-                fetchPokemonData(endURL);
+                fetchPokemonData(endOffset);
               }}
             />
           </Pagination>
