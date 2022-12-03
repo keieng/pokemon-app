@@ -3,9 +3,10 @@ import { Spinner } from "react-bootstrap";
 
 export const Loading = () => {
   return (
-    <h1>
-      Loading
-      <Spinner animation="grow" />
-    </h1>
+    <div className="vh-100 vw-100 d-flex justify-content-center align-items-center">
+      <h1 className="display-4">
+        <Spinner animation="grow" />
+      </h1>
+    </div>
   );
 };
