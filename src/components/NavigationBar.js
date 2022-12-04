@@ -6,7 +6,7 @@ export const NavigationBar = () => {
     <>
       <Navbar bg="primary" variant="dark">
         {/* <Container> */}
-        <Navbar.Brand href="#home" className="ps-3">
+        <Navbar.Brand href="/" className="ps-3">
           {/* <img
               alt=""
               src="/logo.svg"
