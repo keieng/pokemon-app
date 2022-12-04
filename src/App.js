@@ -20,22 +20,24 @@ function App() {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchPokemonData = async (offset) => {
     // ローディング開始
     setIsLoading(true);
     // ポケモンデータを取得
-    let res = await getAllPokemon(
+    const res = await getAllPokemon(
       `${initialURL}?offset=${offset}&limit=${limit}`
     );
     // 各ポケモンの詳細なデータを取得
     await loadPokemon(res.results);
-    setDataCount(res.count);
-    setPageCount(Math.floor(dataCount / limit));
-    setEndOffset(pageCount * limit);
+    setDataCount(Number(res.count));
     setNextURL(res.next);
     setPrevURL(res.previous);
+    setPageCount(Math.ceil(Number(dataCount / limit)));
+    setEndOffset(Number((pageCount - 1) * limit));
     setOffset(offset);
+    setCurrentPage(offset / limit + 1);
     // ローディング終了
     setIsLoading(false);
   };
@@ -121,15 +123,22 @@ function App() {
                 fetchPokemonData(offset - limit);
               }}
             />
-            {/* {Array.from({ length: pageCount }).map((_, i) =>
-              i <= 10 ? <Pagination.Item>{i + 1}</Pagination.Item> : <></>
-            )} */}
-            {/* <Pagination.Ellipsis />
-
-            <Pagination.Item active>{12}</Pagination.Item>
-
-            <Pagination.Ellipsis />
-            <Pagination.Item>{20}</Pagination.Item> */}
+            {Array.from({ length: pageCount }).map((_, i) =>
+              i <= currentPage + 10 && i >= currentPage - 10 ? (
+                <Pagination.Item
+                  active={i + 1 === currentPage}
+                  onClick={() => {
+                    fetchPokemonData(limit * i);
+                  }}
+                >
+                  {i + 1}
+                </Pagination.Item>
+              ) : i + 1 == 1 || i + 1 == pageCount ? (
+                <Pagination.Ellipsis disabled />
+              ) : (
+                <></>
+              )
+            )}
             <Pagination.Next
               disabled={nextURL ? false : true}
               onClick={() => {
