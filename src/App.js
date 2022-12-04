@@ -11,15 +11,14 @@ import { Loading } from "./components/Loading";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
-  const [isLoading, setIsLoading] = useState(true);
+  const lnitialLimit = 10;
   const [pokemonData, setPokemonData] = useState([]);
-  const [nextURL, setNextURL] = useState("");
-  const [prevURL, setPrevURL] = useState("");
-  const [dataCount, setDataCount] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
-  const [endOffset, setEndOffset] = useState(0);
+  const [limit, setLimit] = useState(lnitialLimit);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isNextPage, setIsNextPage] = useState(false);
+  const [isPrevPage, setIsPrevPage] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchPokemonData = async (offset) => {
@@ -31,11 +30,11 @@ function App() {
     );
     // 各ポケモンの詳細なデータを取得
     await loadPokemon(res.results);
-    setDataCount(Number(res.count));
-    setNextURL(res.next);
-    setPrevURL(res.previous);
-    setPageCount(Math.ceil(Number(dataCount / limit)));
-    setEndOffset(Number((pageCount - 1) * limit));
+    // 次のページがあるかの判断用
+    setIsNextPage(res.next != null);
+    // 前のページがあるかの判断用
+    setIsPrevPage(res.previous != null);
+    setPageCount(Math.ceil(Number(res.count / limit)));
     setOffset(offset);
     setCurrentPage(offset / limit + 1);
     // ローディング終了
@@ -112,13 +111,13 @@ function App() {
           </Row>
           <Pagination>
             <Pagination.First
-              disabled={prevURL ? false : true}
+              disabled={!isPrevPage}
               onClick={() => {
                 fetchPokemonData(0);
               }}
             />
             <Pagination.Prev
-              disabled={prevURL ? false : true}
+              disabled={!isPrevPage}
               onClick={() => {
                 fetchPokemonData(offset - limit);
               }}
@@ -126,6 +125,7 @@ function App() {
             {Array.from({ length: pageCount }).map((_, i) =>
               i <= currentPage + 10 && i >= currentPage - 10 ? (
                 <Pagination.Item
+                  key={i}
                   active={i + 1 === currentPage}
                   onClick={() => {
                     fetchPokemonData(limit * i);
@@ -140,15 +140,15 @@ function App() {
               )
             )}
             <Pagination.Next
-              disabled={nextURL ? false : true}
+              disabled={!isNextPage}
               onClick={() => {
                 fetchPokemonData(offset + limit);
               }}
             />
             <Pagination.Last
-              disabled={nextURL ? false : true}
+              disabled={!isNextPage}
               onClick={() => {
-                fetchPokemonData(endOffset);
+                fetchPokemonData(Number((pageCount - 1) * limit));
               }}
             />
           </Pagination>
