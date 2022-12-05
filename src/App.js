@@ -20,6 +20,7 @@ function App() {
   const [isPrevPage, setIsPrevPage] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const selectLimitValue = [5, 10, 20, 40, 60, 80, 100];
 
   const fetchPokemonData = async (offset) => {
     // ローディング開始
@@ -30,31 +31,19 @@ function App() {
     );
     // 各ポケモンの詳細なデータを取得
     await loadPokemon(res.results);
-    // 次のページがあるかの判断用
+    // 次のページがあるかの判断
     setIsNextPage(res.next != null);
-    // 前のページがあるかの判断用
+    // 前のページがあるかの判断
     setIsPrevPage(res.previous != null);
+    // ページ数の設定
     setPageCount(Math.ceil(Number(res.count / limit)));
+    // 現在のoffsetを設定
     setOffset(offset);
+    // 現在のページを設定
     setCurrentPage(offset / limit + 1);
     // ローディング終了
     setIsLoading(false);
   };
-
-  // const offsetUrl = () => {
-  //   setEndURL(`${initialURL}?offset=${offset}&limit=${limit}`);
-  // };
-
-  // 表示件数変更
-  const changeLimit = (value) => {
-    if (!value) return;
-    setLimit(Number(value));
-  };
-
-  // 初期表示時にポケモンデータ取得
-  useEffect(() => {
-    fetchPokemonData(0);
-  }, [limit]);
 
   const loadPokemon = async (data) => {
     let _pokemonData = await Promise.all(
@@ -66,7 +55,16 @@ function App() {
     setPokemonData(_pokemonData);
   };
 
-  const selectLimitValue = [5, 10, 20, 40, 60, 80, 100];
+  // 表示件数変更
+  const changeLimit = (value) => {
+    if (!value) return;
+    setLimit(Number(value));
+  };
+
+  // 初期表示時にポケモンデータ取得
+  useEffect(() => {
+    fetchPokemonData(0);
+  }, [limit]);
 
   return (
     <div className="App">
