@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import { PokemonCard } from "./components/PokemonCard";
 import { getAllPokemon, getPokemon } from "./utils/pokemon";
 import Container from "react-bootstrap/Container";
