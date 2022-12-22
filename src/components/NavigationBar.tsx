@@ -1,5 +1,9 @@
 import Navbar from "react-bootstrap/Navbar";
 
+/**
+ * ナビゲーションバー
+ * @returns
+ */
 export const NavigationBar = () => {
   return (
     <>

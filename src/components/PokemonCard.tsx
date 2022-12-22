@@ -1,8 +1,8 @@
-import React from "react";
 import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
+import { IPokemon } from "../interface/IPokemon";
 
-export const PokemonCard = ({ pokemon }) => {
+export const PokemonCard = ({ pokemon }: IPokemon) => {
   return (
     <Card className="shadow">
       <Card.Img
