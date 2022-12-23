@@ -7,6 +7,7 @@ import Row from "react-bootstrap/Row";
 import { NavigationBar } from "./components/NavigationBar";
 import { Form, Pagination } from "react-bootstrap";
 import { Loading } from "./components/Loading";
+import { PaginationArea } from "./components/PaginationArea";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
@@ -106,49 +107,15 @@ function App() {
               );
             })}
           </Row>
-          <Pagination>
-            <Pagination.First
-              disabled={!isPrevPage}
-              onClick={() => {
-                fetchPokemonData(0);
-              }}
-            />
-            <Pagination.Prev
-              disabled={!isPrevPage}
-              onClick={() => {
-                fetchPokemonData(offset - limit);
-              }}
-            />
-            {Array.from({ length: pageCount }).map((_, i) =>
-              i <= currentPage + 10 && i >= currentPage - 10 ? (
-                <Pagination.Item
-                  key={i}
-                  active={i + 1 === currentPage}
-                  onClick={() => {
-                    fetchPokemonData(limit * i);
-                  }}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ) : i + 1 == 1 || i + 1 == pageCount ? (
-                <Pagination.Ellipsis disabled />
-              ) : (
-                <></>
-              )
-            )}
-            <Pagination.Next
-              disabled={!isNextPage}
-              onClick={() => {
-                fetchPokemonData(offset + limit);
-              }}
-            />
-            <Pagination.Last
-              disabled={!isNextPage}
-              onClick={() => {
-                fetchPokemonData(Number((pageCount - 1) * limit));
-              }}
-            />
-          </Pagination>
+          <PaginationArea
+            fetchPokemonData={fetchPokemonData}
+            isPrevPage={isPrevPage}
+            isNextPage={isNextPage}
+            currentPage={currentPage}
+            pageCount={pageCount}
+            offset={offset}
+            limit={limit}
+          />
         </Container>
       )}
     </div>
