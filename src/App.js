@@ -8,6 +8,7 @@ import { NavigationBar } from "./components/NavigationBar";
 import { Form, Pagination } from "react-bootstrap";
 import { Loading } from "./components/Loading";
 import { PaginationArea } from "./components/PaginationArea";
+import PokeAPI from "pokeapi-typescript";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
@@ -26,17 +27,19 @@ function App() {
     // ローディング開始
     setIsLoading(true);
     // ポケモンデータを取得
-    const res = await getAllPokemon(
-      `${initialURL}?offset=${offset}&limit=${limit}`
-    );
+    const resourceList = await PokeAPI.Pokemon.list(limit, offset);
+    console.log(resourceList);
+    // const res = await getAllPokemon(
+    //   `${initialURL}?offset=${offset}&limit=${limit}`
+    // );
     // 各ポケモンの詳細なデータを取得
-    await loadPokemon(res.results);
+    await loadPokemon(resourceList.results);
     // 次のページがあるかの判断
-    setIsNextPage(res.next != null);
+    setIsNextPage(resourceList.next != null);
     // 前のページがあるかの判断
-    setIsPrevPage(res.previous != null);
+    setIsPrevPage(resourceList.previous != null);
     // ページ数の設定
-    setPageCount(Math.ceil(Number(res.count / limit)));
+    setPageCount(Math.ceil(Number(resourceList.count / limit)));
     // 現在のoffsetを設定
     setOffset(offset);
     // 現在のページを設定
