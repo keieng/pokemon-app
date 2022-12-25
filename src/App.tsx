@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PokemonCard } from "./components/PokemonCard";
-import { getAllPokemon, getPokemon } from "./utils/pokemon";
+import { getAllPokemonAsync, getPokemon } from "./utils/pokemon";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -9,6 +9,7 @@ import { Form, Pagination } from "react-bootstrap";
 import { Loading } from "./components/Loading";
 import { PaginationArea } from "./components/PaginationArea";
 import PokeAPI from "pokeapi-typescript";
+import { IPokemon } from "./interface/IPokemon";
 
 function App() {
   const initialURL = "https://pokeapi.co/api/v2/pokemon";
@@ -23,13 +24,12 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const selectLimitValue = [5, 10, 20, 40, 60, 80, 100];
 
-  const fetchPokemonData = async (offset) => {
+  const fetchPokemonData = async (offset: number) => {
     // ローディング開始
     setIsLoading(true);
     // ポケモンデータを取得
     const resourceList = await PokeAPI.Pokemon.list(limit, offset);
-    console.log(resourceList);
-    // const res = await getAllPokemon(
+    // const resourceList = await getAllPokemonAsync(
     //   `${initialURL}?offset=${offset}&limit=${limit}`
     // );
     // 各ポケモンの詳細なデータを取得
@@ -49,9 +49,12 @@ function App() {
   };
 
   const loadPokemon = async (data) => {
-    let _pokemonData = await Promise.all(
+    const _pokemonData = await Promise.all(
       data.map((pokemon) => {
-        let pokemonRecord = getPokemon(pokemon.url);
+        // const pokemonRecord = getPokemon(pokemon.url);
+        const pokemonRecord = PokeAPI.Pokemon.resolve(
+          pokemon.name
+        ); /* .then(result => console.log(result)); */
         return pokemonRecord;
       })
     );
