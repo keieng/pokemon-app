@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { PokemonCard } from "./components/PokemonCard";
-import { getAllPokemonAsync, getPokemon } from "./utils/pokemon";
+
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -51,10 +51,7 @@ function App() {
   const loadPokemon = async (data) => {
     const _pokemonData = await Promise.all(
       data.map((pokemon) => {
-        // const pokemonRecord = getPokemon(pokemon.url);
-        const pokemonRecord = PokeAPI.Pokemon.resolve(
-          pokemon.name
-        ); /* .then(result => console.log(result)); */
+        const pokemonRecord = PokeAPI.Pokemon.fetch(pokemon.name);
         return pokemonRecord;
       })
     );
