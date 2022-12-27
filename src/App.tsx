@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import { PokemonCard } from "./components/PokemonCard";
-
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { NavigationBar } from "./components/NavigationBar";
-import { Form, Pagination } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { Loading } from "./components/Loading";
 import { PaginationArea } from "./components/PaginationArea";
 import PokeAPI from "pokeapi-typescript";
-import { IPokemon } from "./interface/IPokemon";
 
 function App() {
-  const initialURL = "https://pokeapi.co/api/v2/pokemon";
   const lnitialLimit = 10;
   const [pokemonData, setPokemonData] = useState([]);
   const [offset, setOffset] = useState(0);
