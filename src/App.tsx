@@ -10,32 +10,46 @@ import { PaginationArea } from "./components/PaginationArea";
 import PokeAPI, { INamedApiResource, IPokemon } from "pokeapi-typescript";
 
 function App() {
+  // ポケモンの詳細データの配列
   const [pokemonData, setPokemonData] = useState<Array<IPokemon>>();
+  // ポケモンデータリストのoffset
+  const [offset, setOffset] = useState<number>(0);
+  // ポケモンデータリストのlimit
+  const [limit, setLimit] = useState<number>(10);
+  // ローディング状態管理
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // 次のページがあるかの判定
+  const [isNextPage, setIsNextPage] = useState<boolean>(false);
+  // 前のページがあるかの判定
+  const [isPrevPage, setIsPrevPage] = useState<boolean>(false);
+  // ポケモンデータリストの全ページ数
+  const [pageCount, setPageCount] = useState<number>(0);
+  // ポケモンデータリストの現在のページ
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  // 表示件数の候補
+  const selectLimitValue: number[] = [5, 10, 20, 40, 60, 80, 100];
 
+  /**
+   * ポケモンデータリストを取得
+   * @param offset
+   */
   const fetchPokemonData = async (offset: number) => {
-    // ローディング開始
     setIsLoading(true);
-    // ポケモンデータを取得
+    // ポケモンデータリストを取得
     const resourceList = await PokeAPI.Pokemon.list(limit, offset);
-    // const resourceList = await getAllPokemonAsync(
-    //   `${initialURL}?offset=${offset}&limit=${limit}`
-    // );
-    // 各ポケモンの詳細なデータを取得
     await loadPokemon(resourceList.results);
-    // 次のページがあるかの判断
     setIsNextPage(resourceList.next != null);
-    // 前のページがあるかの判断
     setIsPrevPage(resourceList.previous != null);
-    // ページ数の設定
     setPageCount(Math.ceil(Number(resourceList.count / limit)));
-    // 現在のoffsetを設定
     setOffset(offset);
-    // 現在のページを設定
     setCurrentPage(offset / limit + 1);
-    // ローディング終了
     setIsLoading(false);
   };
 
+  /**
+   *  ポケモンの詳細なデータを取得
+   * @param data
+   */
   const loadPokemon = async (data: INamedApiResource<IPokemon>[]) => {
     const _pokemonData: Array<IPokemon> = await Promise.all(
       data.map((pokemon) => {
@@ -46,12 +60,17 @@ function App() {
     setPokemonData(_pokemonData);
   };
 
+  /**
+   * 表示件数変更
+   */
   const changeLimit = (value: string) => {
     if (!value) return;
     setLimit(Number(value));
   };
 
-  // 初期表示時にポケモンデータ取得
+  /**
+   * 初期表示時にポケモンデータ取得
+   */
   useEffect(() => {
     fetchPokemonData(0);
   }, [limit]);
