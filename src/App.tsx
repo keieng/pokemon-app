@@ -7,19 +7,10 @@ import { NavigationBar } from "./components/NavigationBar";
 import { Form } from "react-bootstrap";
 import { Loading } from "./components/Loading";
 import { PaginationArea } from "./components/PaginationArea";
-import PokeAPI from "pokeapi-typescript";
+import PokeAPI, { INamedApiResource, IPokemon } from "pokeapi-typescript";
 
 function App() {
-  const lnitialLimit = 10;
-  const [pokemonData, setPokemonData] = useState([]);
-  const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(lnitialLimit);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isNextPage, setIsNextPage] = useState(false);
-  const [isPrevPage, setIsPrevPage] = useState(false);
-  const [pageCount, setPageCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const selectLimitValue = [5, 10, 20, 40, 60, 80, 100];
+  const [pokemonData, setPokemonData] = useState<Array<IPokemon>>();
 
   const fetchPokemonData = async (offset: number) => {
     // ローディング開始
@@ -45,8 +36,8 @@ function App() {
     setIsLoading(false);
   };
 
-  const loadPokemon = async (data) => {
-    const _pokemonData = await Promise.all(
+  const loadPokemon = async (data: INamedApiResource<IPokemon>[]) => {
+    const _pokemonData: Array<IPokemon> = await Promise.all(
       data.map((pokemon) => {
         const pokemonRecord = PokeAPI.Pokemon.fetch(pokemon.name);
         return pokemonRecord;
@@ -55,8 +46,7 @@ function App() {
     setPokemonData(_pokemonData);
   };
 
-  // 表示件数変更
-  const changeLimit = (value) => {
+  const changeLimit = (value: string) => {
     if (!value) return;
     setLimit(Number(value));
   };
@@ -96,16 +86,17 @@ function App() {
             </Col>
           </Form.Group>
           <Row sm={5} className="my-3">
-            {pokemonData.map((pokemon) => {
-              return (
-                <Col className="p-3">
-                  <PokemonCard
-                    key={pokemon.base_experience}
-                    pokemon={pokemon}
-                  />
-                </Col>
-              );
-            })}
+            {pokemonData &&
+              pokemonData.map((pokemon) => {
+                return (
+                  <Col className="p-3">
+                    <PokemonCard
+                      key={pokemon.base_experience}
+                      pokemon={pokemon}
+                    />
+                  </Col>
+                );
+              })}
           </Row>
           <PaginationArea
             fetchPokemonData={fetchPokemonData}
