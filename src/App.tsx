@@ -69,10 +69,22 @@ function App() {
   };
 
   /**
+   * ポケモンの名前の日本語を返す
+   * @param pokemonName
+   * @returns
+   */
+  const localizePokemonName = async (pokemonName: string) => {
+    const pokemonSpacies = await PokeAPI.PokemonSpecies.fetch(pokemonName);
+    console.log(pokemonSpacies.names[0].name);
+    return pokemonSpacies.names[0].name;
+  };
+
+  /**
    * 初期表示時にポケモンデータ取得
    */
   useEffect(() => {
     fetchPokemonData(0);
+    localizePokemonName("bulbasaur");
   }, [limit]);
 
   return (
