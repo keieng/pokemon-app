@@ -51,13 +51,24 @@ function App() {
    * @param data
    */
   const loadPokemon = async (data: INamedApiResource<IPokemon>[]) => {
-    const _pokemonData: Array<IPokemon> = await Promise.all(
+    const pokemonRecordArray: Array<IPokemon> = await Promise.all(
       data.map((pokemon) => {
         const pokemonRecord = PokeAPI.Pokemon.fetch(pokemon.name);
         return pokemonRecord;
       })
     );
-    setPokemonData(_pokemonData);
+    const pokemonRecordLocalizeArray = await Promise.all(
+      pokemonRecordArray.map(async (pokemon) => {
+        const localizeName = await localizePokemonName(pokemon.name);
+        const localizeData = {
+          jaName: localizeName,
+          data: pokemon,
+        };
+        return localizeData;
+      })
+    );
+    console.log(pokemonRecordLocalizeArray);
+    setPokemonData(pokemonRecordArray);
   };
 
   /**
@@ -75,7 +86,6 @@ function App() {
    */
   const localizePokemonName = async (pokemonName: string) => {
     const pokemonSpacies = await PokeAPI.PokemonSpecies.fetch(pokemonName);
-    console.log(pokemonSpacies.names[0].name);
     return pokemonSpacies.names[0].name;
   };
 
@@ -84,7 +94,6 @@ function App() {
    */
   useEffect(() => {
     fetchPokemonData(0);
-    localizePokemonName("bulbasaur");
   }, [limit]);
 
   return (
@@ -124,6 +133,7 @@ function App() {
                     <PokemonCard
                       key={pokemon.base_experience}
                       pokemon={pokemon}
+                      // pokemonNameJa={localizePokemonName(pokemon.name)}
                     />
                   </Col>
                 );
