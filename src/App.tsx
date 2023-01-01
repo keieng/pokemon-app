@@ -11,7 +11,8 @@ import PokeAPI, { INamedApiResource, IPokemon } from "pokeapi-typescript";
 
 function App() {
   // ポケモンの詳細データの配列
-  const [pokemonData, setPokemonData] = useState<Array<IPokemon>>();
+  const [pokemonData, setPokemonData] =
+    useState<Array<{ jaName: string; data: IPokemon }>>();
   // ポケモンデータリストのoffset
   const [offset, setOffset] = useState<number>(0);
   // ポケモンデータリストのlimit
@@ -67,8 +68,7 @@ function App() {
         return localizeData;
       })
     );
-    console.log(pokemonRecordLocalizeArray);
-    setPokemonData(pokemonRecordArray);
+    setPokemonData(pokemonRecordLocalizeArray);
   };
 
   /**
@@ -131,9 +131,9 @@ function App() {
                 return (
                   <Col className="p-3">
                     <PokemonCard
-                      key={pokemon.base_experience}
-                      pokemon={pokemon}
-                      // pokemonNameJa={localizePokemonName(pokemon.name)}
+                      key={pokemon.data.base_experience}
+                      pokemon={pokemon.data}
+                      pokemonNameJa={pokemon.jaName}
                     />
                   </Col>
                 );

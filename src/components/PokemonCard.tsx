@@ -4,9 +4,10 @@ import { IPokemon } from "pokeapi-typescript";
 
 interface Props {
   pokemon: IPokemon;
+  pokemonNameJa: string;
 }
 
-export const PokemonCard = ({ pokemon }: Props) => {
+export const PokemonCard = ({ pokemon, pokemonNameJa }: Props) => {
   return (
     <Card className="shadow">
       <Card.Img
@@ -16,7 +17,7 @@ export const PokemonCard = ({ pokemon }: Props) => {
       />
       <Card.Body>
         <Card.Title>
-          {pokemon.base_experience}:{pokemon.name}
+          {pokemon.base_experience}:{pokemonNameJa}
         </Card.Title>
         <Card.Text></Card.Text>
       </Card.Body>
